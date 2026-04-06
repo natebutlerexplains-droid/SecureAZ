@@ -3,8 +3,36 @@
 import { useState } from 'react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { Download, FileSpreadsheet, CalendarClock, X } from 'lucide-react'
+import { CenteredEmptyState } from '@/components/ui/CenteredEmptyState'
 
-export function ExportActionsBar() {
+export type ExportActionsBarVariant = 'demo' | 'new'
+
+export function ExportActionsBar({
+  variant = 'demo',
+}: {
+  variant?: ExportActionsBarVariant
+}) {
+  if (variant === 'new') {
+    return (
+      <GlassCard className="min-h-56 flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-white">Report Details</h2>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Export options and generation status
+            </p>
+          </div>
+        </div>
+        <CenteredEmptyState
+          title="No report generated yet"
+          description="Configure your environment and run scans to generate your first SOC 2 readiness report."
+          ctaLabel="Go to Configs"
+          ctaHref="/?tab=settings"
+        />
+      </GlassCard>
+    )
+  }
+
   const reportDate = 'April 6, 2026'
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [exporting, setExporting] = useState<'pdf' | 'csv' | null>(null)

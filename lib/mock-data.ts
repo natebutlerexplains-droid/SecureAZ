@@ -30,6 +30,7 @@ export interface AIFinding {
   id: string
   title: string
   description: string
+  status?: string
   severity: Severity
   source: string
   timestamp: string
@@ -69,6 +70,7 @@ export interface ThreatDataPoint {
 export interface AzureResource {
   id: string
   label: string
+  resourceType?: string
   complianceScore: number // 0–100
   status: ResourceStatus
   controlCount: number // # of SOC 2 controls that cover this resource type

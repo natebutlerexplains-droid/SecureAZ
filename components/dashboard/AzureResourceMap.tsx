@@ -2,6 +2,7 @@
 
 import { azureResources, type AzureResource } from '@/lib/mock-data'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { CenteredEmptyState } from '@/components/ui/CenteredEmptyState'
 import { MoreHorizontal, ArrowUpRight } from 'lucide-react'
 
 // ─── Status → color mapping ───────────────────────────────────────────────────
@@ -23,7 +24,34 @@ const nodePositions: Record<string, { x: number; y: number }> = {
   logging:   { x: 220, y: 450 },
 }
 
-export function AzureResourceMap() {
+export type AzureResourceMapVariant = 'demo' | 'new'
+
+export function AzureResourceMap({
+  variant = 'demo',
+}: {
+  variant?: AzureResourceMapVariant
+}) {
+  const isNewAccount = variant === 'new'
+
+  if (isNewAccount) {
+    return (
+      <GlassCard className="min-h-80 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white">Azure Resource Map</h2>
+        </div>
+
+        <div className="flex-1 min-h-0 rounded-2xl p-2 overflow-hidden flex">
+          <CenteredEmptyState
+            title="No resources mapped yet"
+            description="Configure your environment to discover Azure resources and build your map."
+            ctaLabel="Go to Configs"
+            ctaHref="/?tab=settings"
+          />
+        </div>
+      </GlassCard>
+    )
+  }
+
   const center = { x: 300, y: 250, r: 46 }
 
   // Merge azureResources with their positions
@@ -46,7 +74,7 @@ export function AzureResourceMap() {
         </button>
       </div>
 
-      <div className="flex-1 min-h-0 rounded-2xl border border-white/10 bg-black/15 backdrop-blur-xl p-2 overflow-hidden">
+      <div className="flex-1 min-h-0 rounded-2xl bg-black/15 backdrop-blur-xl p-2 overflow-hidden">
         <div className="relative w-full aspect-600/520">
           {/* Background glows */}
           <div

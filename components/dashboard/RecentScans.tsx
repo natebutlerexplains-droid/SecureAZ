@@ -1,7 +1,8 @@
  'use client'
 
-import { recentScans } from '@/lib/mock-data'
+import { recentScans, type ScanEvent } from '@/lib/mock-data'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { CenteredEmptyState } from '@/components/ui/CenteredEmptyState'
 import { CheckCircle2, Calendar, LoaderCircle, XCircle, MoreHorizontal, ArrowUpRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -33,10 +34,17 @@ const statusConfig = {
   },
 }
 
-export function RecentScans() {
+export type RecentScansVariant = 'demo' | 'new'
+
+export function RecentScans({
+  variant = 'demo',
+}: {
+  variant?: RecentScansVariant
+}) {
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const isNewAccount = variant === 'new'
 
   useEffect(() => {
     if (!menuOpen) return
@@ -72,17 +80,19 @@ export function RecentScans() {
     <GlassCard className="flex flex-col gap-3 min-h-0 h-full">
       <div className="flex items-center justify-between relative mb-0.5" ref={menuRef}>
         <h2 className="text-lg font-bold text-white">Recent Automated Scans</h2>
-        <button
-          type="button"
-          onClick={() => setMenuOpen((value) => !value)}
-          className="p-1.5 hover:bg-white/8 rounded-lg transition-colors"
-          aria-label="Scans menu"
-          title="Scans menu"
-        >
-          <MoreHorizontal className="w-5 h-5 text-slate-300" />
-        </button>
+        {!isNewAccount && (
+          <button
+            type="button"
+            onClick={() => setMenuOpen((value) => !value)}
+            className="p-1.5 hover:bg-white/8 rounded-lg transition-colors"
+            aria-label="Scans menu"
+            title="Scans menu"
+          >
+            <MoreHorizontal className="w-5 h-5 text-slate-300" />
+          </button>
+        )}
 
-        {menuOpen && (
+        {menuOpen && !isNewAccount && (
           <div
             className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200/60 bg-slate-50/95 text-slate-900 shadow-2xl shadow-black/20 backdrop-blur-xl overflow-hidden z-20"
             role="menu"
@@ -104,7 +114,9 @@ export function RecentScans() {
         )}
       </div>
 
-      <RecentScansContent />
+      <div className="flex-1 min-h-0 flex">
+        <RecentScansContent scans={isNewAccount ? [] : undefined} />
+      </div>
     </GlassCard>
   )
 }
@@ -112,16 +124,31 @@ export function RecentScans() {
 export function RecentScansContent({
   maxHeightClassName = 'max-h-80',
   className = '',
+  scans,
 }: {
   maxHeightClassName?: string
   className?: string
+  scans?: ScanEvent[]
 }) {
+  const resolvedScans = scans ?? recentScans
+
+  if (resolvedScans.length === 0) {
+    return (
+      <CenteredEmptyState
+        title="No scans yet"
+        description="Run your first scan to start tracking compliance changes over time."
+        ctaLabel="Go to Configs"
+        ctaHref="/?tab=settings"
+      />
+    )
+  }
+
   return (
     <div className="flex-1 min-h-0 flex">
       <ul
         className={`flex-1 min-h-0 space-y-3 overflow-y-auto pr-1 -mr-1 ${maxHeightClassName} ${className}`}
       >
-        {recentScans.map((scan) => {
+        {resolvedScans.map((scan) => {
           const cfg = statusConfig[scan.status]
           const Icon = cfg.icon
 

@@ -21,7 +21,7 @@ export function GlassCard({ children, className = '' }: GlassCardProps) {
       {/* Subtle inner glow for depth */}
       <div className="pointer-events-none absolute inset-0 rounded-2xl bg-linear-to-br from-white/8 via-sky-400/6 to-transparent" />
 
-      <div className="relative">{children}</div>
+      <div className="relative flex-1 flex flex-col">{children}</div>
     </div>
   )
 }
