@@ -5,7 +5,7 @@ import { AIFindingsContent } from '@/components/dashboard/AIFindingsContent'
 export default function FindingsPage() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <Header activeTab="dashboard" onTabChange={() => {}} />
+      <Header activeTab="dashboard" />
 
       <main className="flex-1 overflow-auto p-3 relative bg-transparent">
         <div className="relative flex flex-col gap-5 max-w-[1600px] mx-auto">

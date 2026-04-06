@@ -1,5 +1,6 @@
-import { aiFindings } from '@/lib/mock-data'
+import { aiFindings, type AIFinding } from '@/lib/mock-data'
 import { ExternalLink } from 'lucide-react'
+import { CenteredEmptyState } from '@/components/ui/CenteredEmptyState'
 
 const severityBar: Record<string, string> = {
   critical: 'bg-red-500',
@@ -19,13 +20,28 @@ const severityBadge: Record<string, string> = {
 
 export function AIFindingsContent({
   maxHeightClassName = 'max-h-80',
+  findings,
 }: {
   maxHeightClassName?: string
+  findings?: AIFinding[]
 }) {
+  const resolvedFindings = findings ?? aiFindings
+
+  if (resolvedFindings.length === 0) {
+    return (
+      <CenteredEmptyState
+        title="No findings yet"
+        description="Connect your environment and run a scan to generate AI recommendations."
+        ctaLabel="Go to Configs"
+        ctaHref="/?tab=settings"
+      />
+    )
+  }
+
   return (
-    <div className="flex-1 min-h-0">
+    <div className="flex-1 min-h-0 w-full flex flex-col">
       <ul className={`space-y-2.5 ${maxHeightClassName} overflow-y-auto pr-1 -mr-1`}>
-        {aiFindings.map((finding) => (
+        {resolvedFindings.map((finding) => (
           <li key={finding.id} className="group relative rounded-2xl overflow-hidden">
             <div className="absolute inset-0 bg-black/35 border border-white/10 shadow-lg shadow-black/40 transition-colors group-hover:bg-black/45 group-hover:border-white/15" />
 

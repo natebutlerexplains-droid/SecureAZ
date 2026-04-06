@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { azureResources } from '@/lib/mock-data'
 import { MoreHorizontal, ChevronDown } from 'lucide-react'
+import { CenteredEmptyState } from '@/components/ui/CenteredEmptyState'
 
 function barColor(status: string) {
   if (status === 'compliant') return 'bg-emerald-400/70'
@@ -17,7 +18,35 @@ function scoreTextColor(status: string) {
   return 'text-red-300'
 }
 
-export function ResourceCoverageChart() {
+export type ResourceCoverageChartVariant = 'demo' | 'new'
+
+export function ResourceCoverageChart({
+  variant = 'demo',
+}: {
+  variant?: ResourceCoverageChartVariant
+}) {
+  if (variant === 'new') {
+    return (
+      <GlassCard className="flex flex-col gap-3 min-h-80">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-white">Resource Coverage</h2>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Compliance score per Azure resource type
+            </p>
+          </div>
+        </div>
+
+        <CenteredEmptyState
+          title="No resources yet"
+          description="Configure your environment to discover resources and compute coverage."
+          ctaLabel="Go to Configs"
+          ctaHref="/?tab=settings"
+        />
+      </GlassCard>
+    )
+  }
+
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const sorted = [...azureResources].sort((a, b) => b.complianceScore - a.complianceScore)
 
