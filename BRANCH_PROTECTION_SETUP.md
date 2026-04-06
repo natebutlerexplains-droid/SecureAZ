@@ -1,93 +1,127 @@
-# Branch Protection Setup - Manual Configuration
+# Branch Protection Setup - GitHub Rulesets Configuration
 
-Due to API limitations on public repositories, branch protection rules must be configured via GitHub's web UI. Follow these exact steps.
+GitHub uses the modern **Rulesets** system for branch protection. Follow these exact steps to create three rulesets for dev → qa → main promotion workflow.
 
 ## Setup Instructions
 
-### Step 1: Main Branch (Production)
+### Step 1: Main Branch Ruleset (Production)
 
-1. Go to: https://github.com/natebutlerexplains-droid/SecureAZ/settings/branches
-2. Click **"Add rule"** button
-3. Fill in **Branch name pattern**: `main`
-4. Enable the following checkboxes:
+1. Go to: https://github.com/natebutlerexplains-droid/SecureAZ/settings/rules/new
+2. **Ruleset Name**: `main`
+3. **Enforcement status**: Leave as default (Active)
 
-   ✅ **Require a pull request before merging**
-   - ✅ Require approvals: **2**
-   - ✅ Dismiss stale pull request approvals when new commits are pushed
-   - ✅ Require review from Code Owners
-   - ✅ Require status checks to pass before merging
-   - ✅ Require branches to be up to date before merging
-   - ✅ Require conversation resolution before merging
+#### Target Branches Configuration
+- Click **"Add target"** or select **"By branch name pattern"**
+- Enter: `main` (exact match, no wildcards)
 
-   ✅ **Restrict who can push to matching branches**
-   - Search and select: **natebutler-sudo** (or your admin account)
+#### Enable These Rules
 
-   ✅ **Allow force pushes**
-   - Select: **Deny force pushes**
+**Branch Rules:**
+- ✅ **Restrict creations** — Only allow users with bypass permission to create matching refs
+- ✅ **Restrict updates** — Only allow users with bypass permission to update matching refs
+- ✅ **Restrict deletions** — Only allow users with bypass permissions to delete matching refs
 
-   ✅ **Allow deletions**
-   - Unchecked (disallow deletions)
+**Pull Request Requirements:**
+- ✅ **Require a pull request before merging**
+  - ✅ Required approvals: **2**
+  - ✅ Dismiss stale pull request approvals when new commits are pushed
+  - ✅ Require review from Code Owners
+  - ✅ Require approval of the most recent reviewable push
+  - ✅ Require conversation resolution before merging
 
-5. Click **"Create"** button
+**Status & Quality Checks:**
+- ✅ **Require status checks to pass** (leave empty for now, can add specific checks later)
+- ✅ **Require branches to be up to date before merging**
+- ✅ **Block force pushes** — Prevent all force pushes
 
----
+**Allowed Merge Methods:**
+- ✅ **Allow Squash and merge** (recommended for clean history)
+- ❌ Merge commits (leave unchecked)
+- ❌ Rebase and merge (leave unchecked)
 
-### Step 2: QA Branch (Staging)
-
-1. Click **"Add rule"** again
-2. Fill in **Branch name pattern**: `qa`
-3. Enable the following checkboxes:
-
-   ✅ **Require a pull request before merging**
-   - ✅ Require approvals: **1**
-   - ✅ Dismiss stale pull request approvals when new commits are pushed
-   - ✅ Require status checks to pass before merging
-   - ✅ Require branches to be up to date before merging
-
-   ✅ **Restrict who can push to matching branches**
-   - Leave empty (all developers can push)
-
-   ✅ **Allow force pushes**
-   - Select: **Deny force pushes**
-
-   ✅ **Allow deletions**
-   - Unchecked (disallow deletions)
-
-4. Click **"Create"** button
+4. Scroll down and click **"Create"** button
 
 ---
 
-### Step 3: Dev Branch (Development)
+### Step 2: QA Branch Ruleset (Staging)
 
-1. Click **"Add rule"** again
-2. Fill in **Branch name pattern**: `dev`
-3. Enable the following checkboxes:
+1. Go to: https://github.com/natebutlerexplains-droid/SecureAZ/settings/rules/new
+2. **Ruleset Name**: `qa`
+3. **Enforcement status**: Leave as default (Active)
 
-   ✅ **Require a pull request before merging**
-   - ✅ Require approvals: **1**
-   - ✅ Require status checks to pass before merging
+#### Target Branches Configuration
+- Click **"Add target"** or select **"By branch name pattern"**
+- Enter: `qa` (exact match)
 
-   ✅ **Allow force pushes**
-   - Select: **Allow force pushes** → **Everyone** (optional, for rebasing)
+#### Enable These Rules
 
-   ✅ **Allow deletions**
-   - Unchecked (disallow deletions)
+**Branch Rules:**
+- ✅ **Restrict deletions** — Only allow users with bypass permissions to delete matching refs
 
-4. Click **"Create"** button
+**Pull Request Requirements:**
+- ✅ **Require a pull request before merging**
+  - ✅ Required approvals: **1**
+  - ✅ Dismiss stale pull request approvals when new commits are pushed
+  - ✅ Require conversation resolution before merging
+
+**Status & Quality Checks:**
+- ✅ **Require status checks to pass**
+- ✅ **Require branches to be up to date before merging**
+- ✅ **Block force pushes** — Prevent all force pushes
+
+**Allowed Merge Methods:**
+- ✅ Allow **Create a merge commit**
+- ✅ Allow **Squash and merge**
+- ✅ Allow **Rebase and merge** (useful for flexibility)
+
+4. Scroll down and click **"Create"** button
+
+---
+
+### Step 3: Dev Branch Ruleset (Development)
+
+1. Go to: https://github.com/natebutlerexplains-droid/SecureAZ/settings/rules/new
+2. **Ruleset Name**: `dev`
+3. **Enforcement status**: Leave as default (Active)
+
+#### Target Branches Configuration
+- Click **"Add target"** or select **"By branch name pattern"**
+- Enter: `dev` (exact match)
+
+#### Enable These Rules
+
+**Branch Rules:**
+- ✅ **Restrict deletions** — Only allow users with bypass permissions to delete matching refs
+
+**Pull Request Requirements:**
+- ✅ **Require a pull request before merging**
+  - ✅ Required approvals: **1**
+
+**Status & Quality Checks:**
+- ✅ **Require status checks to pass**
+
+**Allowed Merge Methods:**
+- ✅ Allow **Create a merge commit**
+- ✅ Allow **Squash and merge**
+- ✅ Allow **Rebase and merge** (essential for dev branch work)
+
+*Note: Dev branch does NOT block force pushes to allow flexible development practices*
+
+4. Scroll down and click **"Create"** button
 
 ---
 
 ## Verification
 
-After completing all three rules, verify by:
+After completing all three rulesets, verify by:
 
-1. Go to https://github.com/natebutlerexplains-droid/SecureAZ/settings/branches
-2. You should see **3 rules** listed:
-   - `main` (Production)
-   - `qa` (Staging)
-   - `dev` (Development)
+1. Go to: https://github.com/natebutlerexplains-droid/SecureAZ/settings/rules
+2. You should see **3 rulesets** listed:
+   - `main` (Production - highest protection)
+   - `qa` (Staging - medium protection)
+   - `dev` (Development - lower protection)
 
-3. Expand each rule to confirm all settings are correct
+3. Click each ruleset to expand and confirm all settings are correct
 
 ---
 
