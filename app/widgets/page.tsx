@@ -4,7 +4,7 @@ import { SOC2ReadinessWidget } from '@/components/dashboard/SOC2ReadinessWidget'
 export default function WidgetShowcase() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <Header activeTab="dashboard" onTabChange={() => {}} />
+      <Header activeTab="dashboard" />
 
       <main className="flex-1 overflow-auto flex flex-col items-center justify-center p-12 relative">
         <div className="text-center mb-8">

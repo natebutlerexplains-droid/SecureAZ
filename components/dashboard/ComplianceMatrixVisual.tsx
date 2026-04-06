@@ -1,7 +1,8 @@
 'use client'
 
-import { complianceControls, azureResources } from '@/lib/mock-data'
+import { complianceControls, azureResources, type ComplianceControl, type AzureResource } from '@/lib/mock-data'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { CenteredEmptyState } from '@/components/ui/CenteredEmptyState'
 import { Check, X, AlertCircle, HelpCircle, MoreHorizontal } from 'lucide-react'
 
 // ─── Status config ────────────────────────────────────────────────────────────
@@ -68,13 +69,27 @@ function resourceBarColor(status: string) {
 // Progress series: simulated 7-week evidence collection trend (%)
 const progressSeries = [48, 54, 59, 62, 67, 71, 74]
 
-export function ComplianceMatrixVisual() {
-  const totalControls = complianceControls.length
-  const verifiedControls = complianceControls.filter((c) => c.evidenceRate >= 80).length
-  const openRequests = complianceControls.filter((c) => c.evidenceRate < 80).length
+export type ComplianceMatrixVisualVariant = 'demo' | 'new'
+
+export function ComplianceMatrixVisual({
+  variant = 'demo',
+  controls,
+  resources,
+}: {
+  variant?: ComplianceMatrixVisualVariant
+  controls?: ComplianceControl[]
+  resources?: AzureResource[]
+}) {
+  const isNewAccount = variant === 'new'
+  const resolvedControls = controls ?? complianceControls
+  const resolvedResources = resources ?? azureResources
+
+  const totalControls = resolvedControls.length
+  const verifiedControls = resolvedControls.filter((c) => c.evidenceRate >= 80).length
+  const openRequests = resolvedControls.filter((c) => c.evidenceRate < 80).length
 
   // Top 4 resource types for the chart (sorted by compliance score asc — most interesting first)
-  const chartResources = [...azureResources]
+  const chartResources = [...resolvedResources]
     .sort((a, b) => a.complianceScore - b.complianceScore)
     .slice(0, 4)
 
@@ -82,16 +97,26 @@ export function ComplianceMatrixVisual() {
     <GlassCard className="min-h-80 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-white">Compliance Control Matrix</h2>
-        <button
-          type="button"
-          className="p-1.5 hover:bg-white/8 rounded-lg transition-colors"
-          aria-label="Compliance matrix menu"
-        >
-          <MoreHorizontal className="w-5 h-5 text-slate-300" />
-        </button>
+        {!isNewAccount && (
+          <button
+            type="button"
+            className="p-1.5 hover:bg-white/8 rounded-lg transition-colors"
+            aria-label="Compliance matrix menu"
+          >
+            <MoreHorizontal className="w-5 h-5 text-slate-300" />
+          </button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-3 flex-1 min-h-0">
+      {isNewAccount ? (
+        <CenteredEmptyState
+          title="No controls yet"
+          description="Configure your environment to generate SOC 2 control coverage and evidence tracking."
+          ctaLabel="Go to Configs"
+          ctaHref="/?tab=settings"
+        />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-3 flex-1 min-h-0">
 
         {/* ── Main table ──────────────────────────────────────────────────── */}
         <div className="rounded-2xl border border-white/10 bg-black/15 backdrop-blur-xl overflow-hidden flex flex-col min-h-0">
@@ -136,7 +161,7 @@ export function ComplianceMatrixVisual() {
           {/* Rows */}
           <div className="flex-1 min-h-0 overflow-y-auto bg-white/10">
             <div className="grid grid-cols-[1fr_88px_60px_60px_60px_72px] gap-px">
-              {complianceControls.map((control) => {
+              {resolvedControls.map((control) => {
                 const cfg = statusConfig[control.status]
                 const res = resourceApplicability[control.id]
 
@@ -337,6 +362,7 @@ export function ComplianceMatrixVisual() {
           </div>
         </div>
       </div>
+      )}
     </GlassCard>
   )
 }

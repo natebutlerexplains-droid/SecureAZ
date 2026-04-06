@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { MoreHorizontal, Download } from 'lucide-react'
+import { CenteredEmptyState } from '@/components/ui/CenteredEmptyState'
 
 const allTrendData = [
   { week: 'Jan 13', score: 42 },
@@ -39,7 +40,35 @@ function getChange(range: TimeRange) {
 const W = 460, H = 120, PAD_X = 8, PAD_Y = 10
 const MIN_SCORE = 50, MAX_SCORE = 100
 
-export function SOC2TrendChart() {
+export type SOC2TrendChartVariant = 'demo' | 'new'
+
+export function SOC2TrendChart({
+  variant = 'demo',
+}: {
+  variant?: SOC2TrendChartVariant
+}) {
+  if (variant === 'new') {
+    return (
+      <GlassCard className="flex flex-col gap-3 min-h-80">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-white">SOC 2 Score Trend</h2>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Track readiness progression over time
+            </p>
+          </div>
+        </div>
+
+        <CenteredEmptyState
+          title="No trend data yet"
+          description="Configure your environment and run scans to start building a score history."
+          ctaLabel="Go to Configs"
+          ctaHref="/?tab=settings"
+        />
+      </GlassCard>
+    )
+  }
+
   const [range, setRange] = useState<TimeRange>('8w')
   const trendData = getTrendData(range)
   const n = trendData.length
