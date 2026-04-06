@@ -1,0 +1,32 @@
+# Code ownership and review requirements
+
+# Default reviewers for all changes
+* @yourusername
+
+# Dashboard components
+components/dashboard/ @yourusername
+components/dashboard/reports/ @yourusername
+
+# UI components
+components/ui/ @yourusername
+
+# Layout components
+components/layout/ @yourusername
+
+# Core app files
+app/page.tsx @yourusername
+app/layout.tsx @yourusername
+
+# Configuration files
+package.json @yourusername
+tailwind.config.ts @yourusername
+tsconfig.json @yourusername
+
+# Documentation
+README.md @yourusername
+DESIGN_SYSTEM.md @yourusername
+BRANDING.md @yourusername
+DEPLOYMENT.md @yourusername
+
+# GitHub configuration
+.github/ @yourusername
