@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local visual verification artifacts
+/screenshot-*.png
+/final-*.png
+/verify-*.png
+/review-*.png

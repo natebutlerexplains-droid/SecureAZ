@@ -1,65 +1,90 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState, useRef } from 'react'
+import { Header, type AppTab } from '@/components/layout/Header'
+import { SOC2ReadinessWidget } from '@/components/dashboard/SOC2ReadinessWidget'
+import { AIFindingsWidget } from '@/components/dashboard/AIFindingsWidget'
+import { RecentScans } from '@/components/dashboard/RecentScans'
+import { ComplianceMatrixVisual } from '@/components/dashboard/ComplianceMatrixVisual'
+import { AzureResourceMap } from '@/components/dashboard/AzureResourceMap'
+import { ReportsPanel } from '@/components/dashboard/reports/ReportsPanel'
+
+const TAB_ORDER: AppTab[] = ['dashboard', 'reports', 'settings']
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<AppTab>('dashboard')
+  const tabIndex = TAB_ORDER.indexOf(activeTab)
+
+  // Swipe gesture tracking
+  const touchStartX = useRef(0)
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    const delta = touchStartX.current - e.changedTouches[0].clientX
+    if (delta > 60 && tabIndex < TAB_ORDER.length - 1) {
+      setActiveTab(TAB_ORDER[tabIndex + 1])
+    } else if (delta < -60 && tabIndex > 0) {
+      setActiveTab(TAB_ORDER[tabIndex - 1])
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col h-screen overflow-hidden">
+      <Header activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Swipeable panel container */}
+      <div
+        className="flex-1 overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Slider — 3× wide, slides left/right by 33.333% per tab */}
+        <div
+          className="flex h-full transition-transform duration-300 ease-in-out"
+          style={{
+            width: '300%',
+            transform: `translateX(-${tabIndex * 33.333}%)`,
+          }}
+        >
+          {/* ── Dashboard ── */}
+          <div className="h-full overflow-auto p-3 relative" style={{ width: '33.333%' }}>
+            <div className="flex flex-col gap-4 max-w-400 mx-auto">
+              <h1 className="text-2xl font-black text-white tracking-tight">
+                Azure Environment Audit — SOC 2 Readiness
+              </h1>
+
+              <div className="grid grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)_minmax(0,1fr)] gap-3">
+                <SOC2ReadinessWidget />
+                <AIFindingsWidget />
+                <RecentScans />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <ComplianceMatrixVisual />
+                <AzureResourceMap />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Reports ── */}
+          <div className="h-full overflow-auto p-3 relative" style={{ width: '33.333%' }}>
+            <ReportsPanel />
+          </div>
+
+          {/* ── Settings ── */}
+          <div className="h-full overflow-auto p-3 relative" style={{ width: '33.333%' }}>
+            <div className="flex flex-col gap-4 max-w-400 mx-auto">
+              <h1 className="text-2xl font-black text-white tracking-tight">Settings</h1>
+              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl p-8 text-center text-slate-400 text-sm">
+                Settings coming soon
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
-  );
+  )
 }
